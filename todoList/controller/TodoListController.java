@@ -1,21 +1,24 @@
-package me.shinsunyoung.springbootdeveloper.todoList.controller;
+package me.shinsunyoung.springbootdeveloper.domain.todoList.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.shinsunyoung.springbootdeveloper.todoList.apiPayload.ApiResponse;
-import me.shinsunyoung.springbootdeveloper.todoList.apiPayload.code.status.SuccessStatus;
-import me.shinsunyoung.springbootdeveloper.todoList.converter.TodoConverter;
-import me.shinsunyoung.springbootdeveloper.todoList.dto.AddTodoRequest;
-import me.shinsunyoung.springbootdeveloper.todoList.dto.TodoResponse;
-import me.shinsunyoung.springbootdeveloper.todoList.dto.UpdateTodoRequest;
-import me.shinsunyoung.springbootdeveloper.todoList.service.TodoListService;
-import me.shinsunyoung.springbootdeveloper.todoList.domain.TodoList;
+import me.shinsunyoung.springbootdeveloper.global.apiPayload.ApiResponse;
+import me.shinsunyoung.springbootdeveloper.global.apiPayload.code.status.SuccessStatus;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.converter.TodoConverter;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.dto.AddTodoRequest;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.dto.TodoResponse;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.dto.UpdateTodoRequest;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.service.TodoListService;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.domain.TodoList;
+import me.shinsunyoung.springbootdeveloper.domain.todoList.validation.annotation.ExistIds;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class TodoListController {
 
     private final TodoListService todoListService;
@@ -33,7 +36,7 @@ public class TodoListController {
 
     @GetMapping("/todo/{id}")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ApiResponse<TodoResponse> findTodo(@PathVariable long id){
+    public ApiResponse<TodoResponse> findTodo(@ExistIds @PathVariable long id){
         TodoList todoList = todoListService.findById(id);
         return ApiResponse.onSuccess(TodoConverter.toDto(todoList));
 
@@ -55,7 +58,7 @@ public class TodoListController {
 
     @PatchMapping("/todo/{id}")
     @CrossOrigin(origins = "http://localhost:5173")
-    public ApiResponse<TodoList> updateTodo(@PathVariable long id, @RequestBody UpdateTodoRequest updateTodoRequest){
+    public ApiResponse<TodoList> updateTodo(@ExistIds @PathVariable long id, @RequestBody UpdateTodoRequest updateTodoRequest){
         TodoList todoList=todoListService.update(id, updateTodoRequest.getTitle(), updateTodoRequest.getContent(),updateTodoRequest.getChecked());
         return ApiResponse.onSuccess(todoList);
     }
